@@ -3,9 +3,10 @@ import Login from './components/Login';
 import { useEffect } from 'react';
 import { onAuthStateChanged } from 'firebase/auth';
 import { auth } from './utils/firebase';
+import {useSelector} from 'react-redux';
+import { createBrowserRouter, Navigate, RouterProvider } from 'react-router-dom';
 
 function App() {
-  const dispatch = useDispatch();
   const PrivateRoute = ({children})=>{
     const user = useSelector(state=>state.user.user);
     if(!user) return <Navigate to="/" />
