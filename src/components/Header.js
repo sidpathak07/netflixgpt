@@ -1,21 +1,42 @@
-import { useState } from "react";
-import { signOut } from "firebase/auth";
+import { useState,useEffect } from "react";
+import { signOut, onAuthStateChanged } from "firebase/auth";
 import { auth } from "../utils/firebase";
-import { useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
+import { useDispatch,useSelector } from 'react-redux';
+import { addUser, removeUser } from '../utils/userSlice';
+import { createBrowserRouter, Navigate, RouterProvider } from 'react-router-dom';
+
 const Header = () => {
     const [profileMenu, setProfileMenu] = useState(false);
     const user = useSelector(state => state.user.user);
     const navigate = useNavigate();
+    const dispatch = useDispatch();
     const signOutUser = () => {
         signOut(auth)
             .then(() => {
                 console.log("User signed out successfully.");
                 setProfileMenu(false);
-                navigate("/");
             })
             .catch(error => console.log("Sign out error:", error.message));
     }
+    useEffect(() => {
+    const unsubscribe = onAuthStateChanged(auth, (user) => {
+      if (user) {
+        dispatch(addUser({
+          email: user.email,
+          uid: user.uid,
+          accessToken: user.stsTokenManager?.accessToken,
+          refreshToken: user.stsTokenManager?.refreshToken,
+          displayName: user.displayName
+        }));
+        navigate("/browse");
+      } else {
+        dispatch(removeUser());
+        navigate("/");
+      }
+    });
+    return () => unsubscribe();
+  }, []);
     return (
         <header className="text-white p-4 flex justify-between">
             <img className="w-44 h-10 bg-gradient-to-b from-gray-700 to-transparent" src="/Netflix_Logo_PMS.png" alt="Netflix Logo" />
