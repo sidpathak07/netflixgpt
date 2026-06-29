@@ -1,3 +1,12 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+/* Hide horizontal scrollbar for movie lists but keep scrolling functionality */
+.movie-list-scroll {
+	-ms-overflow-style: none; /* IE and Edge */
+	scrollbar-width: none; /* Firefox */
+}
+.movie-list-scroll::-webkit-scrollbar {
+	display: none; /* Chrome, Safari, Opera */
+}
